@@ -24,7 +24,7 @@
   @media (min-aspect-ratio:3/5) and (pointer:fine){ #wrap{width:auto;height:100%;aspect-ratio:9/19} }
   canvas{position:absolute;inset:0;width:100%;height:100%;display:block;image-rendering:auto}
   /* v2 구름잠: 상단 점수/게이지 DOM HUD + 하단 버튼 제거 → 캔버스에 직접 그림(달 게이지·기분 핍·고도) */
-  #hud,#coinHud{display:none!important}   /* 점수는 캔버스 drawHud로, 체력은 #gaugeWrap 바로 표시 */
+  #hud,#coinHud,#gaugeWrap{display:none!important}
   /* HUD */
   #hud{position:absolute;top:0;left:0;right:0;z-index:5;pointer-events:none;color:#fff;
        padding-top:env(safe-area-inset-top)}
@@ -51,27 +51,24 @@
   #tutHand.show{display:block;animation:taphand .8s ease-in-out infinite}
   @keyframes taphand{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(10px) scale(.9)}}
   /* gauge: real ui_guageBG frame + ui_guageBar fill */
-  #gaugeWrap{position:absolute;left:50%;transform:translateX(-50%);top:54px;z-index:6;
+  #gaugeWrap{position:absolute;left:50%;transform:translateX(-50%);top:96px;z-index:6;
     width:264px;height:34px;border-radius:17px;background:#fff3dc;border:3px solid #5a3a1a;
     box-shadow:0 4px 0 rgba(90,58,26,.35),inset 0 2px 4px rgba(255,255,255,.6)}
   #gaugeClip{position:absolute;left:5px;top:5px;width:250px;height:21px;overflow:hidden;border-radius:11px}
   #gaugeFill,#gaugeFx{position:absolute;left:0;top:0;height:100%;width:100%;transform-origin:left center}
   #gaugeFill{background:linear-gradient(#ffd66b,#f6a93b);box-shadow:inset 0 -3px 0 rgba(198,127,27,.5)}
   #gaugeFx{opacity:0;background:rgba(255,255,255,.55)}
-  /* on-screen controls — 하단 3버튼: 1칸 점프 / 할퀴기 / 2칸 점프 (양손 엄지 조작) */
-  #btns{position:absolute;left:0;right:0;bottom:0;z-index:10;display:flex;gap:10px;
-    padding:0 12px calc(16px + env(safe-area-inset-bottom));pointer-events:none;
-    transition:opacity .15s;touch-action:manipulation}
-  #btns button{pointer-events:auto;flex:1;height:86px;border:none;border-radius:20px;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
-    font-weight:900;color:#3a2716;cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent;
-    background:#f3d9a6;border-bottom:5px solid #c98b3f;
-    box-shadow:0 4px 0 rgba(90,58,26,.30),inset 0 2px 3px rgba(255,255,255,.6);
-    transition:transform .04s,filter .04s,box-shadow .04s;touch-action:manipulation;user-select:none;-webkit-user-select:none}
-  #btns button .ico{font-size:30px;line-height:1.05}
-  #btns button .lab{font-size:13px;letter-spacing:.3px;opacity:.92}
-  #btns button:active,#btns button.press{transform:translateY(4px);filter:brightness(1.07);box-shadow:0 1px 0 rgba(90,58,26,.30)}
-  #btnClaw{background:#f7b9a1;border-bottom-color:#c4673f;color:#5a261a}   /* 할퀴기 = 파괴(공격) 색 */
+  /* on-screen controls — 하단 양 구석 둥근 나무 아이콘 버튼 (↻ 전환 / ▲ 오르기) */
+  #btns{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-end;
+    z-index:10;padding:0 1.6%;padding-bottom:calc(6px + env(safe-area-inset-bottom));pointer-events:none}
+  /* 하단 버튼: 화면 디자인 폭의 약 30% */
+  #btns button{pointer-events:auto;width:30%;aspect-ratio:192/204;height:auto;border:none;background-color:transparent;outline:none;cursor:pointer;
+    background-repeat:no-repeat;background-position:center;background-size:contain;
+    -webkit-tap-highlight-color:transparent;transition:transform .04s,filter .04s;
+    filter:drop-shadow(0 4px 2px rgba(0,0,0,.35))}
+  #btns button:active{transform:translateY(4px) scale(.96);filter:brightness(1.12) drop-shadow(0 2px 1px rgba(0,0,0,.3))}
+  #btnTurn{background-image:url('assets/ui/btn_turn.png')}   
+  #btnUp{background-image:url('assets/ui/btn_up.png')}       
   /* overlays */
   .overlay{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;
     color:#fff;text-align:center;background:rgba(46,36,25,.6);backdrop-filter:blur(2px)}
@@ -238,11 +235,6 @@
   <button id="muteBtn">🔊</button>
   <button id="pauseBtn" aria-label="일시정지">❚❚</button>
   <div id="gaugeWrap"><div id="gaugeClip"><div id="gaugeFill"></div><div id="gaugeFx"></div></div></div>
-  <div id="btns" style="opacity:0">
-    <button id="btnJump1" aria-label="1칸 점프"><span class="ico">⬆</span><span class="lab">1칸</span></button>
-    <button id="btnClaw" aria-label="할퀴기 (장애물 파괴)"><span class="ico">🐾</span><span class="lab">할퀴기</span></button>
-    <button id="btnJump2" aria-label="2칸 점프"><span class="ico">⏫</span><span class="lab">2칸</span></button>
-  </div>
   <div id="startText">출발!</div>
   <img id="tutHand" src="assets/ui/paw.png" alt="">
   <div id="paused" class="overlay hidden"><h1>일시정지</h1><button id="resumeBtn">계속하기</button></div>
@@ -253,10 +245,9 @@
       <div class="csLabel">캐릭터 선택</div>
       <div id="charSel"></div>
       <div class="howto">
-        <div class="howtoRow"><span class="hk">1칸 / 2칸</span> 다음 발판 거리에 맞는 점프 버튼!</div>
-        <div class="howtoRow"><span class="hk">할퀴기</span>로 막힌 발판(장애물)을 부숴요</div>
-        <div class="howtoRow"><span class="hk">캣닢</span> 발판 → <span class="hk">피버 3초</span> 막 눌러도 초고속!</div>
-        <div class="howtoRow"><small>버튼 틀리면 즉시 추락 · 가만히 있으면 체력↓</small></div>
+        <div class="howtoRow"><span class="hk">좌우로 밀어</span> 구름 발판을 골라 올라가요</div>
+        <div class="howtoRow"><span class="hk">츄르·코인</span>을 먹으면 졸음이 풀려요 <small>(왼쪽 달 게이지)</small></div>
+        <div class="howtoRow">달이 비면 <span class="hk">잠들어서 끝</span> · 높이 오를수록 점수!</div>
       </div>
       <button id="startBtn" type="button">시작하기</button>
       <button id="openInviteBtn" type="button">우리 냥이 초대하기</button>
@@ -421,7 +412,7 @@ const GENERATED_ACTION_GROUPS=[
   {name:'drop',frames:['drop_1','drop_2','drop_3','drop_4','drop_hp'],ratio:[0.55,1.8],area:[0.42,2.2],foot:24,center:28,adjacentScale:1.85,hardAdjacentScale:2.1,adjacentCenter:32}
 ];
 // 정합 캔버스 — 모든 프레임이 발=FOOT_Y, 중심=CX로 정합되어 튐 없음
-const CHAR_CW=480, CHAR_CH=342, CHAR_CX=240, CHAR_OX=240, CHAR_FOOT_Y=330, CHAR_D=300, CHAR_FOOT_SINK=0.06;
+const CHAR_CW=480, CHAR_CH=342, CHAR_CX=240, CHAR_FOOT_Y=330, CHAR_D=300, CHAR_FOOT_SINK=0.06;
 // 캐릭터별 15프레임 정규화 로드
 const CHAR_ASSET={cat:'cherry',latte:'latte',nila:'nila'};
 CHARS.forEach(c=>CHAR_FR.forEach(n=>load('c_'+c.id+'_'+n,'assets/char/'+CHAR_ASSET[c.id]+'_'+n+'.png')));
@@ -894,7 +885,6 @@ const ZONE_PROP=['plant','friend','balloon','lantern','star'];   // home/roof/sk
 [['plant','home_plant'],['friend','roof_friend'],['balloon','sky_balloon'],['lantern','dusk_lantern'],['star','dream_star']]
   .forEach(([k,f])=>load('prop_'+k,'assets/prop/'+f+'.png'));
 load('prop_rocket','assets/prop/rocket.png');   // 로켓 아이템(타고 위로 부스트)
-load('block_obstacle','assets/prop/block_cloud.png');   // Blocked 발판 장애물(할퀴기로 파괴)
 // 앰비언트 배경 스프라이트 로드 (이게 없어서 연기/구름/새/꽃잎/깃발이 안 그려졌던 버그 수정)
 ['smoke','cloud','bird','bird1','bird2','bird3','petal','friend_a','friend_b','spacecat','spacecat_wave','kite_a','kite_b','dusk_a','dusk_b'].forEach(n=>load('amb_'+n,'assets/amb/'+n+'.png'));
 function altAtStair(i){ return Math.min(6,i)/14 + Math.max(0,i-6)/28; }             // bgScroll 누적 근사(스텝→고도, 2배 느림)
@@ -939,13 +929,11 @@ addEventListener('keydown', startBgm);
 // ---------- 게임 상태 ----------
 let stairs, gen, player, gauge, guageSpeed, addSpeed, maxCount, nowStairsCount, isCheckAddSpeed;
 let score, best, coins, bestCoins, state, clipName, clipT, fallT, camFreezeGy, bgScroll, fx, started, bestAtStart, kickFired;
-let combo=0, comboPopT=0;   // 연속 성공 콤보 → 회복량↑ + 연출
-// === 3버튼 스매시 클라이머: 한 방향 직선 컬럼 + 거리(1/2칸) 판정 + 장애물 파괴 + 피버 ===
-let isFeverMode=false, feverT=0, feverAutoT=0, feverFlash=0, camGyDisp=0;
-const FEVER_DUR=3.0;        // Fever(캣닢) 발판 도달 → 3초 피버
-const FEVER_P=0.05;            // 발판 5% 확률로 Fever
-const BLOCK_P=0.30/(1-FEVER_P);  // Fever 선판정 보정 → 1칸 발판 실효 Blocked 확률 정확히 30%
-const FEVER_STEP=0.085;     // 피버 중 자동 초고속 상승 간격
+let combo=0, comboPopT=0;   // 깔끔하게 연속으로 맞히면 콤보 → 회복량↑ + 연출(숙련 보상)
+// === 구름잠(Cloud Nap) v2 규칙: 졸음 게이지=생명. 시간따라 차오르고 츄르(보상)로만 잠을 깸. 0이면 잠들어 끝. 높이=점수 ===
+let offers=[], wake=0.7, slidePending=false, dragLane=-1;
+const WAKE_START=0.7, WAKE_REWARD=0.19, WAKE_REWARD_BIG=0.30, WAKE_DRAIN=0.058;
+const CLOUD_SLIDE_P=0.35, STEADY_COMBO=8;
 let coinAnimT=0, paused=false, revivedThisRun=false;
 let rocketT=0, rocketCamGy=0, rocketFromGy=0, rocketToGy=0, rocketCamGx=0, rocketFromGx=0, rocketToGx=0, rocketFromBg=0, rocketToBg=0, rocketToIdx=0, countT=0;  // 로켓 시퀀스
 let lastStepAt=-9999, stepHopT=999;   // walk 연속 사이클 + 스텝별 홉 바운스(분리)
@@ -959,95 +947,81 @@ document.getElementById('coinCnt').textContent=bestCoins;
 function clamp01(v){ return v<0?0:(v>1?1:v); }
 function setClip(n){ if(clipName!==n){ clipName=n; clipT=0; } }
 
-// === 맵 생성: 좌우 전환 없이 위로 한 방향(직선) 컬럼. Y축 간격 1칸/2칸 랜덤 + 속성 부여 ===
-function genAttr(gap, i){
-  if(i<=2) return 'normal';                                  // 첫 칸들은 항상 안전한 일반 발판
-  if(Math.random()<FEVER_P) return 'fever';                  // 5% 캣닢/츄르(피버)
-  if(gap===1 && Math.random()<BLOCK_P) return 'blocked';     // 1칸 간격일 때만 30% 장애물(파괴 대상)
-  return 'normal';                                           // 기본값
-}
 function ensureStairs(upto){
   while(stairs.length<=upto){
     const prev=stairs[stairs.length-1];
+    const dir = prev.turn ? -prev.dir : prev.dir;          // 직전이 turn이면 방향 반전
     const i=stairs.length;
-    const gap = (i<=2) ? 1 : (Math.random()<0.5 ? 1 : 2);    // 발판 사이 Y축 간격: 1칸 또는 2칸
-    const attr = genAttr(gap, i);
-    stairs.push({ gx:0, gy:prev.gy+gap, gap, attr, smashed:false, coin:null, prop:null, rocket:false });
+    // 발판 위 데코 프롭 제거 — 아기자기한 동적 요소는 모두 배경(앰비언트)으로 이동
+    const turn=gen();
+    const s={ gx:prev.gx+dir, gy:prev.gy+1, turn, dir,
+              coin: (turn===0 && i>=COIN_MIN_STAIR) ? coinRoll(i) : null, prop:null, rocket:false };   // 픽업은 직진 칸에만(꺾는 칸에 묻혀 죽는 일 방지)
+    // 로켓: 드물게, 직진·코인 없는 칸에, 충분히 띄워서 배치
+    if(turn===0 && i>=ROCKET_MIN_STAIR && !s.coin && (i-lastRocketStair)>=ROCKET_GAP && Math.random()<ROCKET_RATE){ s.rocket=true; lastRocketStair=i; }
+    stairs.push(s);
   }
 }
 
-// === 3버튼 판정: 다음 발판의 거리(gap)+속성(attr)에 맞는 버튼만 성공. 틀리면 즉시 게임오버 ===
-function neededButton(t){                                   // 다음 발판 t에 필요한 버튼
-  if(t.attr==='blocked') return 'claw';                    // 막힌 발판(장애물) = 할퀴기 (1칸 간격에만 생성)
-  return t.gap===2 ? 'jump2' : 'jump1';                    // 2칸=2칸점프 / 1칸(Normal·Fever)=1칸점프
+// === 구름잠 코어: 매 비트 2개 발판 제안 → 스와이프로 선택 ===
+function genOffers(cur){           // cur 위 한 줄에 좌/우 2개 발판(solid/reward/cloud)
+  const ay=cur.gy+2.5, inten=stairIntensity(score), pCloud=0.10+0.16*inten, pReward=0.40;   // 츄르(연료)가 자주 나와야 지속 가능
+  const mk=(gx)=>{ const r=Math.random(); let type='solid', reward=null;
+    if(r<pCloud) type='cloud';
+    else if(r<pCloud+pReward){ type='reward'; reward=(Math.random()<0.25)?{type:'big',count:5}:{type:'normal',count:1}; }
+    return {gx, gy:ay, type, reward}; };
+  const a=mk(cur.gx-1.45), b=mk(cur.gx+1.45);
+  if(a.type==='cloud'&&b.type==='cloud'){ (Math.random()<0.5?a:b).type='solid'; }   // 코지 페어니스: 최소 1개 안전
+  return [a,b];
 }
-function press(btn){                                        // btn: 'jump1' | 'claw' | 'jump2'
+function chooseLane(lane){
   if(state!=='play'||paused) return;
   hideHand(); started=true;
-  ensureStairs(player.idx+14);
-  if(isFeverMode){ advanceStep(true, false); return; }      // 피버 중엔 아무 버튼이나 전부 정답 → 초고속 상승
-  const t=stairs[player.idx+1];
-  if(btn!==neededButton(t)){ die(); return; }               // 틀린 버튼 → 즉시 추락(게임오버)
-  advanceStep(false, btn==='claw');
-}
-function advanceStep(fever, isClaw){
-  player.idx++; const landed=stairs[player.idx];
-  score++; combo++; if(combo>=5 && combo%5===0) comboPopT=0.5;
-  checkIncreaseSpeed(score);                                // 레거시: 점수↑ → 드레인 가속(무한)
-  const effRefill=GUAGE_REFILL+0.05*Math.min(combo/80,1);   // 레거시: 정답마다 게이지 조금 회복(콤보 보너스)
-  const gPrev=gauge; gauge=clamp01(gauge+effRefill);
-  if(gPrev<0.12 && gauge>0.30) flashGauge();
-  const wasBlocked = landed.attr==='blocked';
-  if(isClaw || (fever && wasBlocked)){                       // 장애물 파괴 연출
-    landed.smashed=true; spawnFx('kick', landed.gx, landed.gy);
-    try{ playSfx(SFX.button); }catch(e){}
-    if(navigator.vibrate) try{navigator.vibrate(14);}catch(e){}
-  } else {
-    spawnFx(fever?'tpuff':'puff', landed.gx, landed.gy);
-    if(!fever) try{ playSfx(SFX.turn); }catch(e){}
-  }
-  if(landed.attr==='fever' && !landed.smashed){             // Fever(캣닢) 발판 도달 → 피버 발동/연장
-    landed.smashed=true; spawnFx('churuget', landed.gx, landed.gy); startFever();
-  }
-  setClip('walk'); lastStepAt=performance.now(); stepHopT=0; player.facing=1;
-  bgScroll += landed.gap*(1/22);                             // 이동 '거리'만큼 배경(바이옴) 상승
-  document.getElementById('score').textContent=score;
-  updateGauge(); flashGauge();
-  if(!kickFired && bestAtStart>0 && score>bestAtStart){ kickFired=true; spawnFx('kick',landed.gx,landed.gy); showRecord(); }
-  ensureStairs(player.idx+14);
+  let li=lane;
+  if(slidePending){ slidePending=false; if(combo<STEADY_COMBO && Math.random()<CLOUD_SLIDE_P){ li=1-lane; spawnFx('puff', offers[li].gx, offers[li].gy); } }  // 구름 미끄러짐
+  const L=offers[li]||offers[0], cur=stairs[player.idx];
+  const s={ gx:L.gx, gy:L.gy, type:L.type, coin:(L.type==='reward'?L.reward:null), rocket:false };
+  stairs.push(s); player.idx++; player.facing=(L.gx<cur.gx)?-1:1;
+  setClip('walk'); lastStepAt=performance.now(); stepHopT=0;
+  spawnFx('puff', s.gx, s.gy);
+  combo++; if(combo>=5 && combo%5===0) comboPopT=0.5;
+  if(L.type==='reward' && s.coin){     // 츄르/코인 = 잠을 깨우는 '유일한' 연료
+    s.coin.got=true; coins+=s.coin.count; playSfx(s.coin.type==='big'?SFX.bigcoin:SFX.coin);
+    spawnFx(pickupGetFx(s.coin), s.gx, s.gy); document.getElementById('coinCnt').textContent=bestCoins+coins;
+    wake=clamp01(wake + (s.coin.type==='big'?WAKE_REWARD_BIG:WAKE_REWARD));
+  } else if(L.type==='cloud'){ slidePending=true; combo=0; playSfx(SFX.turn); }   // 미끄러운 구름: 회복 0 + 다음 비트 미끄럼
+  else { playSfx(SFX.turn); }                                                     // 평범한 구름: 올라가기만(회복 없음)
+  score++; document.getElementById('score').textContent=score;
+  bgScroll += 1/15;                                          // 한 칸마다 또렷이 상승(바이옴 색 전환)
+  if(score>bestAtStart && !kickFired && bestAtStart>0){ kickFired=true; spawnFx('kick', s.gx, s.gy); showRecord(); }
+  offers=genOffers(s);
   if(player.idx>90){ stairs.splice(0,50); player.idx-=50; }
 }
-function startFever(){                                       // 피버 모드: 3초 무적 초고속
-  isFeverMode=true; feverT=FEVER_DUR; feverAutoT=0; feverFlash=1;
-  try{ playSfx(SFX.bigcoin); }catch(e){}
-  if(navigator.vibrate) try{navigator.vibrate([18,28,18]);}catch(e){}
-}
-function drawHud(){                                          // 점수(좌상단) + 피버 배너 — 체력은 상단 #gaugeWrap 바
-  const pad=Math.round(W*0.05);
-  ctx.save(); ctx.textAlign='left'; ctx.textBaseline='top'; ctx.lineJoin='round';
-  ctx.font='900 '+Math.round(W*0.085)+'px -apple-system,sans-serif';
-  ctx.lineWidth=Math.round(W*0.014); ctx.strokeStyle='rgba(90,58,26,.55)'; ctx.fillStyle='#fff7ea';
-  ctx.strokeText(score, pad, 44); ctx.fillText(score, pad, 44);
-  ctx.font='800 '+Math.round(W*0.030)+'px -apple-system,sans-serif'; ctx.lineWidth=0; ctx.fillStyle='rgba(255,247,234,.85)';
-  ctx.fillText('BEST '+Math.max(best||0,score), pad+2, 44+Math.round(W*0.088));
+function drawHud(){                 // 좌상단 '깨어있음(달)' 게이지 = 생명 + 상단 고도/최고
+  const pad=Math.round(W*0.04), r=Math.round(W*0.062), cx=pad+r, cy=Math.round(56+r), low=wake<0.3;
+  ctx.save();
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,6.283); ctx.fillStyle='rgba(28,34,64,.55)'; ctx.fill();
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,6.283); ctx.clip();
+  ctx.fillStyle=low?'#ff9a66':'#ffe6a0'; const fy=cy+r-2*r*clamp01(wake); ctx.fillRect(cx-r,fy,2*r,2*r);   // 아래→위로 차오름(가득=쌩쌩)
+  ctx.fillStyle='rgba(255,255,255,.18)'; ctx.beginPath(); ctx.arc(cx-r*0.32,fy+r*0.5,r*0.22,0,6.283); ctx.fill();
   ctx.restore();
-  if(isFeverMode){                                          // 피버 배너(무지개 펄스)
-    ctx.save(); ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.lineJoin='round';
-    const pulse=1+0.08*Math.sin(coinAnimT*18);
-    ctx.translate(W*0.5, Math.round(W*0.19)); ctx.scale(pulse,pulse);
-    ctx.font='900 '+Math.round(W*0.072)+'px -apple-system,sans-serif';
-    ctx.lineWidth=Math.round(W*0.018); ctx.strokeStyle='#7a2a10';
-    const hue=Math.floor(coinAnimT*260)%360; ctx.fillStyle='hsl('+hue+',95%,62%)';
-    ctx.strokeText('🔥 FEVER!',0,0); ctx.fillText('🔥 FEVER!',0,0);
-    ctx.restore();
-  }
+  ctx.save(); ctx.beginPath(); ctx.arc(cx,cy,r,0,6.283); ctx.lineWidth=3.5; ctx.strokeStyle='#5a3a1a'; ctx.stroke();
+  if(low){ ctx.globalAlpha=0.35+0.45*Math.abs(Math.sin(coinAnimT*8)); ctx.lineWidth=5; ctx.strokeStyle='#ff5230'; ctx.stroke(); }
+  ctx.restore();
+  if(low){ ctx.save(); ctx.globalAlpha=0.55+0.45*Math.abs(Math.sin(coinAnimT*6)); ctx.font='900 '+Math.round(W*0.042)+'px -apple-system,sans-serif';
+    ctx.fillStyle='#ff6a3a'; ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText('Zzz…', cx+r+10, cy-r*0.1); ctx.restore(); }   // 졸려! 경고
+  // 고도(점수) 크게 + 최고 — 상단 중앙
+  ctx.save(); ctx.textAlign='center'; ctx.textBaseline='top'; ctx.lineJoin='round';
+  ctx.font='900 '+Math.round(W*0.105)+'px -apple-system,sans-serif'; ctx.lineWidth=Math.round(W*0.016); ctx.strokeStyle='rgba(90,58,26,.55)'; ctx.fillStyle='#fff7ea';
+  ctx.strokeText(score, W*0.5, 40); ctx.fillText(score, W*0.5, 40);
+  ctx.font='800 '+Math.round(W*0.032)+'px -apple-system,sans-serif'; ctx.fillStyle='rgba(255,247,234,.85)'; ctx.lineWidth=0;
+  ctx.fillText('BEST '+Math.max(best||0,score), W*0.5, 40+Math.round(W*0.108)); ctx.restore();
 }
 
 function reset(){
-  stairs=[{gx:0,gy:0,gap:0,attr:'normal',smashed:false,coin:null}];   // 시작 발판(직선 컬럼)
-  player={idx:0,facing:1};
-  ensureStairs(20);                                      // 위로 직선 컬럼 미리 생성
-  isFeverMode=false; feverT=0; feverAutoT=0; feverFlash=0; camGyDisp=0;
+  stairs=[{gx:0,gy:0,type:'solid',coin:null}];          // 시작 발판
+  player={idx:0,facing:-1};
+  offers=genOffers(stairs[0]);                           // 첫 선택지 2개
+  wake=WAKE_START; slidePending=false;
   gauge=GAUGE_START; guageSpeed=GUAGE_SPEED0; restoreBgm();
   addSpeed=0.08; maxCount=20; nowStairsCount=0; isCheckAddSpeed=true; lastRocketStair=-999; combo=0; comboPopT=0;
   score=0; coins=0; bgScroll=0; bgScrollDisp=0; fallT=0; fx=[]; amb=[]; started=false;  // 첫 스텝 전엔 드레인 X(첫 스텝 게이팅)
@@ -1066,8 +1040,48 @@ function checkIncreaseSpeed(scorePre){                     // 게이지 속도�
   guageSpeed = GUAGE_SPEED0 + (MAX_ADD_SPEED-GUAGE_SPEED0)*Math.min(1, stairIntensity(scorePre)/0.9);
 }
 
-// ---------- 입력은 press()/advanceStep()(위)에서 처리 ----------
-function startRocket(){                                       // (현재 프로토타입에선 발판에 로켓 미배치 → 휴면) 로켓 상승 시퀀스
+// ---------- 입력 ----------
+function act(isTurnPress){
+  if(state!=='play'||paused) return;
+  hideHand();                                                 // 첫 입력 → 튜토리얼 손가락 숨김
+  const cur=stairs[player.idx];
+  const needTurn = cur.turn===1;
+  if(isTurnPress!==needTurn){ die(); return; }              // 틀린 버튼 → 추락
+  started=true;                                              // 첫 스텝부터 타이머(드레인) 시작
+  if(isTurnPress) playSfx(SFX.turn);                         // 방향을 꺾는 스텝에서만 turn.ogg (직진은 무음)
+
+  checkIncreaseSpeed(score);
+  combo++; if(combo>=5 && combo%5===0) comboPopT=0.5;                       // 콤보 적립(5단위 팝 연출)
+  const effRefill=GUAGE_REFILL+0.05*Math.min(combo/80,1);                   // 콤보가 쌓이면 회복량 0.13→0.18(상한). 평탄기 드레인보다 낮아 무적 불가.
+  const gPrev=gauge; gauge=clamp01(gauge+effRefill);
+  if(gPrev<0.12 && gauge>0.30) flashGauge();                               // 위기 탈출 니어미스 플래시
+  score++; player.idx++;
+  ensureStairs(player.idx+60);
+
+  const landed=stairs[player.idx];
+  const moved=landed.gx-cur.gx; player.facing=moved<0?-1:1;
+  // 스텝 먼지 효과 (turn이면 turn puff)
+  spawnFx(isTurnPress?'tpuff':'puff', landed.gx, landed.gy);
+  setClip('walk'); lastStepAt=performance.now(); stepHopT=0;   // clipT 리셋 안 함 → 다리 사이클 연속, 홉만 스텝별
+
+  // 코인 수집 (착지 계단의 코인)
+  if(landed.coin && !landed.coin.got){
+    landed.coin.got=true; coins+=landed.coin.count;
+    playSfx(landed.coin.type==='big'?SFX.bigcoin:SFX.coin);
+    spawnFx(pickupGetFx(landed.coin), landed.gx, landed.gy);
+    const total=bestCoins+coins; document.getElementById('coinCnt').textContent=total;
+  }
+  // 층별 프롭 상호작용 — 착지 칸에 프롭이 있으면 반응 시작(화분 쓰러짐/친구 인사/풍선 둥실 등)
+  if(landed.prop && !landed.prop.reacted){ landed.prop.reacted=true; landed.prop.reactT=0;
+    spawnFx('cget',landed.gx,landed.gy); try{ playSfx(landed.prop.type==='friend'?SFX.button:SFX.coin); }catch(e){} }
+  // 최고기록 통과 → 킥 스타버스트 1회
+  if(!kickFired && bestAtStart>0 && score>bestAtStart){ kickFired=true; spawnFx('kick',landed.gx,landed.gy); showRecord(); }
+  bgScroll += (score<6 ? 1/14 : 1/28);   // 코지 여정 상승 속도 2배 느림(한참 올라가야 집을 벗어남, ≈28스텝/밴드)
+  document.getElementById('score').textContent=score;
+  updateGauge(); flashGauge();
+  if(landed.rocket && !landed.rocketUsed){ landed.rocketUsed=true; startRocket(); }   // 로켓 획득 → 부스트 상승
+}
+function startRocket(){                                       // 로켓 타고 위로 → 가까운 발판 착지 → 3·2·1 → 재개
   state='rocket'; rocketT=0;
   rocketToIdx=player.idx+ROCKET_BOOST; ensureStairs(rocketToIdx+60);
   rocketFromGy=stairs[player.idx].gy; rocketToGy=stairs[rocketToIdx].gy;
@@ -1152,17 +1166,12 @@ let last=performance.now();
 function frame(now){
   let dt=(now-last)/1000; last=now; if(dt>0.05) dt=0.05; lastDt=dt;
   if(paused){ render(); requestAnimationFrame(frame); return; }   // 일시정지: 화면 고정, 갱신 중단
-  coinAnimT+=dt; if(comboPopT>0) comboPopT-=dt; if(feverFlash>0) feverFlash-=dt;
+  coinAnimT+=dt; if(comboPopT>0) comboPopT-=dt;
   if(state==='play'){
-    if(isFeverMode){                          // === 피버 모드: 3초간 무적·초고속 ===
-      feverT-=dt;
-      feverAutoT+=dt; while(feverAutoT>=FEVER_STEP && isFeverMode){ feverAutoT-=FEVER_STEP; advanceStep(true,false); }  // 자동 초고속 상승
-      if(feverT<=0){ isFeverMode=false; feverT=0; }   // 종료 → 정상 룰 복귀
-    } else if(started){                       // === 레거시 체력(타이머): 가만히 있어도 빠르게 감소, 점수↑ 가속 ===
-      gauge -= guageSpeed*dt; updateGauge();
-      if(gauge<=0){ gauge=0; combo=0; comboPopT=0; die(); }   // 체력 0 → 게임오버
+    if(started){                              // 졸음 = 생명: 시간따라 차오르고(후반↑) 츄르로만 깸. 0이면 잠들어 끝.
+      wake -= (WAKE_DRAIN + 0.04*stairIntensity(score))*dt;
+      if(wake<=0){ wake=0; combo=0; comboPopT=0; playSfx(SFX.drop); die(); }   // 잠들면 게임오버 → 집으로 돌아와 잠(북엔드)
     }
-    camGyDisp += (stairs[player.idx].gy - camGyDisp)*Math.min(1,dt*11);   // 카메라 세로 부드럽게(1·2칸 거리감)
   } else if(state==='sleep'){ sleepT+=dt; if(sleepT>0.9){ state='wake'; wakeT=0; } }   // 바닥에서 자다가
   else if(state==='wake'){ wakeT+=dt; if(wakeT>1.0){ state='play'; started=false; setClip('idle'); clipT=0; showIntro(); } }  // 떠올라 깨며 등반 시작
   else if(state==='return'){ returnT+=dt; bgScrollDisp+=(0-bgScrollDisp)*Math.min(1,dt*3.2); if(returnT>1.1){ state='homewake'; wakeT=0; bgScrollDisp=0; bgScroll=0; } }  // 꿈을 거슬러 스르륵 내려옴
@@ -1174,7 +1183,7 @@ function frame(now){
     bgScroll=bgScrollDisp=rocketFromBg+(rocketToBg-rocketFromBg)*u;          // 배경도 동기 상승
     if(rocketT>=ROCKET_DUR){                                                 // 가까운 발판에 착지
       player.idx=rocketToIdx; score+=ROCKET_BOOST; document.getElementById('score').textContent=score;
-      stairs.length=player.idx+1; if(typeof gen!=='undefined'&&gen&&gen.grant)gen.grant(2); ensureStairs(player.idx+60);   // (휴면) 로켓 착지 후 재개
+      stairs.length=player.idx+1; stairs[player.idx].turn=0; if(gen.grant)gen.grant(2); ensureStairs(player.idx+60);   // 착지 발판+다음칸 강제 직진 → 재개 첫 탭(올라가기)이 즉사하지 않게
       const nx=stairs[player.idx+1]; player.facing = (nx && nx.gx<stairs[player.idx].gx)?-1:1;
       if(!kickFired && bestAtStart>0 && score>bestAtStart){ kickFired=true; spawnFx('kick',stairs[player.idx].gx,stairs[player.idx].gy); showRecord(); }
       spawnFx('puff',stairs[player.idx].gx,stairs[player.idx].gy);
@@ -1183,7 +1192,6 @@ function frame(now){
   }
   else if(state==='countdown'){ countT-=dt; if(countT<=0){ state='play'; started=true; gauge=GUAGE_MAX; updateGauge(); setClip('idle'); clipT=0; lastStepAt=performance.now(); } }  // 3·2·1 끝 → 게이지 가득 채우고 재개
   document.getElementById('gaugeWrap').style.opacity=(state==='play')?'1':'0';
-  { const _b=document.getElementById('btns'); _b.style.opacity=(state==='play')?'1':'0'; _b.style.pointerEvents=(state==='play')?'auto':'none'; }
   if(fxT>0){ fxT-=dt; document.getElementById('gaugeFx').style.opacity=Math.max(0,fxT/0.22*0.45); }  // 0.45→0 부드럽게
   bgScrollDisp += (bgScroll-bgScrollDisp)*Math.min(1,dt*6);   // 0.4s 이징 근사
   if(state==='play') checkZone();                              // 존 전환 연출
@@ -1383,7 +1391,7 @@ const ANCHOR=0.62;            // 플레이어 화면상 세로 위치(낮게 고
 const footCache={};           // 프레임별 최하단 불투명 픽셀 y (발 고정용)
 function frameFootY(key, im){
   if(footCache[key]!=null) return footCache[key];
-  let r=(im&&im.height)?im.height-1:0;   // 기본 발 위치(스캔 실패 시 이미지 하단)
+  let r=CHAR_OY;
   try{ const oc=document.createElement('canvas'); oc.width=im.width; oc.height=im.height;
     const o=oc.getContext('2d',{willReadFrequently:true}); o.drawImage(im,0,0);
     const d=o.getImageData(0,0,im.width,im.height).data;
@@ -1466,46 +1474,22 @@ function drawCloudLayer(cl,scale,par,alpha){
 }
 // 구름 발판 1개 그리기(현재/길/선택). type: solid|reward|cloud(미끄럼). targeted=선택 미리보기
 function drawPlat(sx,sy,o,opts){
-  opts=opts||{}; const attr=o.attr||'normal', A=opts.alpha!=null?opts.alpha:1;
-  const cl=IMG['amb_cloud']; const cw=STEP_X*2.5, ch=cw*(cl&&cl.width?cl.height/cl.width:0.5);
-  ctx.save(); ctx.globalAlpha=A;
-  if(cl&&cl.width){ ctx.drawImage(cl,sx-cw/2,sy-ch*0.62,cw,ch); }    // 폭신한 구름 발판
-  else { ctx.fillStyle='#fff'; ctx.fillRect(sx-cw/2,sy-ch*0.3,cw,ch*0.5); }
-  ctx.restore();
-  // 바로 다음 밟을 발판: 폭신한 타겟 글로우 링 + 까딱이는 안내 화살표
-  if(opts.target){ const pulse=0.55+0.35*Math.sin(coinAnimT*6);
-    ctx.save(); ctx.globalAlpha=pulse; ctx.lineWidth=Math.max(3.5,STEP_X*0.12); ctx.strokeStyle='#ffe27a';
-    ctx.beginPath(); ctx.ellipse(sx,sy-ch*0.06,cw*0.42,ch*0.32,0,0,6.283); ctx.stroke();
-    const ay=sy-ch*0.52-6-Math.abs(Math.sin(coinAnimT*4))*6;     // 위에서 콕콕 가리키는 화살표
-    ctx.globalAlpha=0.92; ctx.fillStyle='#ffce3d'; ctx.strokeStyle='#a9741a'; ctx.lineWidth=2; ctx.lineJoin='round';
-    ctx.beginPath(); ctx.moveTo(sx-10,ay); ctx.lineTo(sx+10,ay); ctx.lineTo(sx,ay+12); ctx.closePath(); ctx.fill(); ctx.stroke();
-    ctx.restore(); }
-  if(attr==='fever'){                        // === Fever 발판: 캣닢/츄르 ===
-    ctx.save(); ctx.globalAlpha=A*(0.5+0.3*Math.sin(coinAnimT*7));
-    const rg=ctx.createRadialGradient(sx,sy-ch*0.18,2,sx,sy-ch*0.18,cw*0.5);
-    rg.addColorStop(0,'rgba(255,214,120,.9)'); rg.addColorStop(1,'rgba(255,214,120,0)');
-    ctx.fillStyle=rg; ctx.beginPath(); ctx.ellipse(sx,sy-ch*0.18,cw*0.46,ch*0.42,0,0,6.283); ctx.fill(); ctx.restore();
-    const fi=(Math.floor(coinAnimT*12)%6)+1, ci=IMG['churu_'+fi], bob=Math.sin(coinAnimT*3+sx)*3;
-    if(ci&&ci.width){ const ih=Math.round(STEP_X*0.95), iw=Math.round(ih*ci.width/ci.height);
-      ctx.save(); ctx.globalAlpha=A; ctx.drawImage(ci, sx-iw/2, sy-ch*0.27-ih+bob, iw, ih); ctx.restore(); }
-  } else if(attr==='blocked' && !o.smashed){  // === Blocked 발판: 부숴야 하는 장애물 ===
-    const ob=IMG['block_obstacle'], bob=Math.sin(coinAnimT*2.2+sx)*2;
-    if(ob&&ob.width){ const ih=Math.round(STEP_X*1.3), iw=Math.round(ih*ob.width/ob.height);
-      ctx.save(); ctx.globalAlpha=A; ctx.drawImage(ob, sx-iw/2, sy-ch*0.24-ih+bob, iw, ih); ctx.restore(); }
-    else {                                    // 폴백: 절차적 먹구름 장애물(에셋 로드 전)
-      ctx.save(); ctx.globalAlpha=A; ctx.translate(sx, sy-ch*0.20-STEP_X*0.5+bob);
-      const r=STEP_X*0.5;
-      ctx.fillStyle='#5b6b86'; for(let a=0;a<10;a++){ const ang=a/10*6.283;
-        ctx.beginPath(); ctx.moveTo(Math.cos(ang)*r,Math.sin(ang)*r);
-        ctx.lineTo(Math.cos(ang+0.31)*r*1.36,Math.sin(ang+0.31)*r*1.36);
-        ctx.lineTo(Math.cos(ang+0.63)*r,Math.sin(ang+0.63)*r); ctx.closePath(); ctx.fill(); }
-      ctx.beginPath(); ctx.arc(0,0,r,0,6.283); ctx.fillStyle='#46546e'; ctx.fill();
-      ctx.fillStyle='#cfd8e6'; ctx.beginPath(); ctx.arc(-r*0.3,-r*0.1,r*0.15,0,6.283); ctx.arc(r*0.3,-r*0.1,r*0.15,0,6.283); ctx.fill();
-      ctx.strokeStyle='#2c3954'; ctx.lineWidth=Math.max(2,r*0.12); ctx.beginPath();
-      ctx.moveTo(-r*0.32,r*0.3); ctx.quadraticCurveTo(0,r*0.12,r*0.32,r*0.3); ctx.stroke();   // 찡그린 입
-      ctx.restore();
+  opts=opts||{}; const cl=IMG['amb_cloud']; const cw=STEP_X*2.5, ch=cw*(cl&&cl.width?cl.height/cl.width:0.5);
+  ctx.save(); ctx.globalAlpha=opts.alpha!=null?opts.alpha:1;
+  if(cl&&cl.width){ ctx.drawImage(cl,sx-cw/2,sy-ch*0.62,cw,ch);
+    if(o.type==='cloud'){                    // 미끄러운 비구름 — 부드러운 푸른 윤기 + 빗방울
+      const rg=ctx.createRadialGradient(sx,sy-ch*0.12,cw*0.05,sx,sy-ch*0.12,cw*0.47);
+      rg.addColorStop(0,'rgba(118,162,224,.5)'); rg.addColorStop(1,'rgba(118,162,224,0)');
+      ctx.fillStyle=rg; ctx.beginPath(); ctx.ellipse(sx,sy-ch*0.12,cw*0.44,ch*0.36,0,0,6.283); ctx.fill();
+      ctx.fillStyle='rgba(86,138,212,.85)'; for(let d=0;d<3;d++){ ctx.beginPath(); ctx.ellipse(sx+(d-1)*cw*0.16, sy+ch*0.16, 3,5,0,0,6.283); ctx.fill(); }
     }
-  }
+  } else { ctx.fillStyle=o.type==='cloud'?'#cfe0f5':'#fff'; ctx.fillRect(sx-cw/2,sy-ch*0.3,cw,ch*0.5); }
+  ctx.restore();
+  if(o.type==='reward' && o.reward){ const fi=(Math.floor(coinAnimT*12)%6)+1, ci=IMG[pickupAssetPrefix(o.reward)+fi];
+    if(ci&&ci.width){ const ih=Math.round(STEP_X*(o.reward.type==='big'?0.9:0.66)), iw=Math.round(ih*ci.width/ci.height), bob=Math.sin(coinAnimT*3+sx)*3;
+      ctx.drawImage(ci, sx-iw/2, sy-ch*0.30-ih+bob, iw, ih); } }
+  if(opts.targeted){ const paw=IMG['paw']; const pw=STEP_X*0.8;
+    ctx.save(); ctx.globalAlpha=0.9; if(paw&&paw.width) ctx.drawImage(paw, sx-pw/2, sy-ch*0.34-pw, pw, pw); ctx.restore(); }
 }
 function render(){
   if(state==='ready'||state==='sleep'||state==='homewake'){ drawHomeScene(); return; }
@@ -1519,24 +1503,17 @@ function render(){
     if(u>0.01){ ctx.save(); ctx.globalAlpha=u; drawSkyBg(); ctx.restore(); }
     drawBookendCat(); return;
   }
-  const p=stairs[player.idx]; const camGx=0;               // 직선 컬럼: 모든 발판 gx=0 → 화면 중앙
-  const camGy=(state==='rocket')?rocketCamGy:((state==='play')?camGyDisp:p.gy);   // 세로 카메라(부드러운 이징)
+  const p=stairs[player.idx]; const camGx=(state==='rocket')?rocketCamGx:p.gx;
+  const camGy=(state==='rocket')?rocketCamGy:p.gy;   // 로켓 상승 중엔 카메라가 위로 패닝 → 발판이 아래로 흐름(끝에 목적지 발판이 중앙·ANCHOR로 도착)
   drawSkyBg();                                              // 꿈하늘 + 시차 구름
   if(!ready) return;
-  const sxC=sx_(0,camGx);                                   // 컬럼 중앙 X
   const blockH=Math.round(STEP_X*BLOCK_AR);                 // fx 위치용
-  // 지나온 발판 — 아래로 옅게(모두 일반 구름)
-  const lo=Math.max(0,player.idx-7);
-  for(let i=lo;i<player.idx;i++){ const sy=sy_(stairs[i].gy,camGy);
+  const lo=Math.max(0,player.idx-8);
+  for(let i=lo;i<player.idx;i++){ const s=stairs[i], sx=sx_(s.gx,camGx), sy=sy_(s.gy,camGy);   // 지나온 구름 — 아래로 옅게
     if(sy<-STEP_X*2||sy>H+STEP_X*2) continue;
-    drawPlat(sxC,sy,{attr:'normal'},{alpha:Math.max(0.13,0.5-(player.idx-i)*0.07)}); }
-  // 다가오는 발판 — 위로 8칸 미리(거리·속성 보임). 바로 다음(idx+1)은 타겟 하이라이트
-  const hi=player.idx+8; ensureStairs(hi+2);
-  for(let i=player.idx+1;i<=hi;i++){ const s=stairs[i], sy=sy_(s.gy,camGy);
-    if(sy<-STEP_X*3||sy>H+STEP_X*2) continue;
-    drawPlat(sxC,sy,s,{alpha:Math.max(0.28,1-(i-player.idx-1)*0.11),target:(i===player.idx+1 && state==='play' && !isFeverMode)}); }
-  // 현재 발판(고양이 발밑) — 부순/소비된 발판은 일반 구름으로
-  { const s=stairs[player.idx]; drawPlat(sxC,sy_(s.gy,camGy),{attr:s.smashed?'normal':s.attr,smashed:s.smashed},{alpha:1}); }
+    drawPlat(sx,sy,{type:(s.type==='cloud')?'cloud':'solid'},{alpha:Math.max(0.13,0.5-(player.idx-i)*0.07)}); }
+  { const s=stairs[player.idx]; drawPlat(sx_(s.gx,camGx),sy_(s.gy,camGy),{type:(s.type==='cloud')?'cloud':'solid'},{alpha:1}); }   // 현재 구름(고양이 발밑)
+  if(state==='play'){ for(let k=0;k<offers.length;k++){ const o=offers[k]; drawPlat(sx_(o.gx,camGx),sy_(o.gy,camGy),o,{alpha:0.98,targeted:dragLane===k}); } }   // 선택지 2개(머리 위)
   // 효과
   for(const e of fx){ const fi=Math.floor(e.t*e.def.fps); const im=IMG[e.def.key+(fi+1)];
     if(!im||!im.width) continue;
@@ -1576,13 +1553,7 @@ function render(){
     ctx.drawImage(im, -CHAR_CX*S, -CHAR_FOOT_Y*S, CHAR_CW*S, CHAR_CH*S);
     ctx.restore();
   }
-  if(isFeverMode && state==='play'){                        // 피버 연출: 화면 컬러 반전감(무지개 오버레이) + 가장자리 글로우
-    const hue=Math.floor(coinAnimT*260)%360;
-    ctx.save(); ctx.globalCompositeOperation='overlay'; ctx.globalAlpha=0.34+0.12*Math.sin(coinAnimT*12);
-    ctx.fillStyle='hsl('+hue+',92%,58%)'; ctx.fillRect(0,0,W,H); ctx.restore();
-    ctx.save(); ctx.globalAlpha=0.55; ctx.lineWidth=Math.round(W*0.035); ctx.strokeStyle='hsl('+((hue+140)%360)+',95%,62%)'; ctx.strokeRect(0,0,W,H); ctx.restore();
-  }
-  if(feverFlash>0){ ctx.save(); ctx.globalAlpha=Math.min(0.85,feverFlash*0.9); ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H); ctx.restore(); }  // 발동 순간 화이트 플래시
+  if(wake<0.34 && state==='play'){ ctx.save(); ctx.globalAlpha=(0.34-wake)*1.0; ctx.fillStyle='#10142a'; ctx.fillRect(0,0,W,H); ctx.restore(); }  // 졸릴수록 화면이 살짝 어두워짐(텔레그래프)
   if(state==='play') drawHud();
   if(state==='play' && combo>=5) drawCombo();
   if(state==='countdown') drawCountdown();   // 3·2·1 (게이지 멈춘 채로 숨 고르기)
@@ -1648,7 +1619,8 @@ function setPaused(p){
 function togglePause(){ if(paused){ setPaused(false); } else if(state==='play'){ setPaused(true); } }
 
 // ---------- 컨트롤 ----------
-function doPress(btn){ if(paused||state!=='play') return; stopLandingDemo(); demoSilent=false; startBgm(); press(btn); }   // 버튼 입력 → 판정
+function pickDefaultLane(){ if(!offers.length) return 0; const rank=o=>o.type==='reward'?2:o.type==='cloud'?0:1; return rank(offers[1])>rank(offers[0])?1:0; }   // 탭=더 좋은 발판
+function doChoose(lane){ if(paused||state!=='play') return; stopLandingDemo(); demoSilent=false; startBgm(); chooseLane(lane); }
 function startGame(){ stopLandingDemo(); demoSilent=false; playSfx(SFX.button); reset();
   state='sleep'; sleepT=0; wakeT=0;                          // 꿈 시작: 바닥에서 자다가 깸
   document.getElementById('start').classList.add('hidden');
@@ -1661,8 +1633,7 @@ document.getElementById('resumeBtn').addEventListener('click',e=>{e.preventDefau
 document.getElementById('reviveBtn').addEventListener('click',()=>{       // 부활: 졸음·기분 회복 후 계속(런당 1회)
   if(revivedThisRun) return;
   revivedThisRun=true; playSfx(SFX.button);
-  gauge=GUAGE_MAX; guageSpeed=GUAGE_SPEED0; updateGauge(); restoreBgm();   // 체력 가득 채워 재개
-  isFeverMode=false; feverT=0; feverAutoT=0;
+  wake=WAKE_START; restoreBgm();
   setClip('idle'); clipT=0; fallT=0;
   document.getElementById('over').classList.add('hidden');
   _pauseBtnEl.style.display='block';
@@ -1676,21 +1647,17 @@ addEventListener('keydown',e=>{
   }
   if(e.key==='Escape'||e.key==='p'){ e.preventDefault(); togglePause(); return; }
   if(paused) return;
-  if(e.key==='ArrowLeft'||e.key==='a'){ e.preventDefault(); doPress('jump1'); }                       // ← / A = 1칸 점프
-  else if(e.key==='ArrowRight'||e.key==='d'){ e.preventDefault(); doPress('jump2'); }                  // → / D = 2칸 점프
-  else if(e.key===' '||e.key==='ArrowDown'||e.key==='ArrowUp'||e.key==='s'||e.key==='w'){ e.preventDefault(); doPress('claw'); }  // Space/↓/S = 할퀴기
+  if(e.key==='ArrowLeft'||e.key==='a'){ e.preventDefault(); doChoose(0); }                 // ← = 왼쪽 발판
+  else if(e.key==='ArrowRight'||e.key==='d'){ e.preventDefault(); doChoose(1); }            // → = 오른쪽 발판
+  else if(e.key===' '||e.key==='ArrowUp'||e.key==='w'){ e.preventDefault(); doChoose(pickDefaultLane()); }  // Space/↑ = 더 좋은 발판
   else if(e.key==='Enter'&&state!=='play'){ startGame(); }
 });
-// 하단 3버튼 — 모바일 딜레이 제거를 위해 click 대신 pointerdown(우선) / touchstart로 바인딩
-function bindBtn(id, btn){
-  const el=document.getElementById(id); if(!el) return;
-  const fire=e=>{ e.preventDefault(); el.classList.add('press'); setTimeout(()=>el.classList.remove('press'),90); doPress(btn); };
-  if(window.PointerEvent) el.addEventListener('pointerdown', fire);
-  else { el.addEventListener('touchstart', fire, {passive:false}); el.addEventListener('mousedown', fire); }
-  el.addEventListener('click', e=>e.preventDefault());     // 합성 click 무시(중복 입력 방지)
-  el.addEventListener('contextmenu', e=>e.preventDefault());
-}
-bindBtn('btnJump1','jump1'); bindBtn('btnClaw','claw'); bindBtn('btnJump2','jump2');
+// 스와이프/드래그로 좌·우 발판 선택 — 하단 버튼 없이 화면 전체가 스와이프 영역
+let _pdX=0,_pdOn=false;
+canvas.addEventListener('pointerdown',e=>{ if(state!=='play')return; _pdOn=true; _pdX=e.clientX; dragLane=-1; });
+canvas.addEventListener('pointermove',e=>{ if(!_pdOn||state!=='play')return; const dx=e.clientX-_pdX; if(Math.abs(dx)>16) dragLane=dx<0?0:1; });
+canvas.addEventListener('pointerup',e=>{ if(!_pdOn)return; _pdOn=false; const dx=e.clientX-_pdX; const lane=(Math.abs(dx)>22)?(dx<0?0:1):pickDefaultLane(); dragLane=-1; doChoose(lane); });
+canvas.addEventListener('pointercancel',()=>{ _pdOn=false; dragLane=-1; });
 ['gesturestart','gesturechange','gestureend'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault(),{passive:false}));
 let _lastTapT=0;
 canvas.addEventListener('touchend',e=>{ const n=Date.now(); if(n-_lastTapT<320) e.preventDefault(); _lastTapT=n; },{passive:false});
@@ -2054,8 +2021,8 @@ function runDemo(){
   let steps=0;
   const timer=setInterval(()=>{
     if(state!=='play'){ clearInterval(timer); return; }
-    if(steps<40){ press(neededButton(stairs[player.idx+1])); steps++; return; }   // 정답 버튼으로 자동 등반
-    clearInterval(timer);
+    if(steps<28){ chooseLane(pickDefaultLane()); steps++; return; }
+    chooseLane(Math.random()<0.5?0:1); clearInterval(timer);
   },190);
 }
 function runSlowDemo(keepStartOverlay=false){
@@ -2077,31 +2044,33 @@ else setTimeout(()=>runSlowDemo(true),650);
 requestAnimationFrame(frame);
 
 // QA 훅
-function qStep(){ if(state==='play') press(isFeverMode?'jump1':neededButton(stairs[player.idx+1])); }
-window.__g={ press, reset, start(){reset();},
+window.__g={ act, reset, start(){reset();},
   get stairs(){return stairs}, get player(){return player},
   get score(){return score}, get coins(){return coins}, get gauge(){return gauge},
   get state(){return state}, get guageSpeed(){return guageSpeed},
-  get fever(){return isFeverMode}, get feverT(){return feverT}, get combo(){return combo},
   get char(){return selectedChar}, setChar(id){ selectedChar=id; updatePickupHudIcon(); },
   get generated(){return hasGeneratedCharacter()}, get generatedFrames(){return Object.keys(generatedCharFrames)},
   setGenerated:setGeneratedCharacter, clearGenerated:clearGeneratedCharacter,
-  stepCorrect(){ qStep(); },                              // 다음 발판에 맞는 정답 버튼으로 1칸
-  doPress:(b)=>press(b),                                  // 임의 버튼(틀리면 사망)
-  nextTarget(){ const t=stairs[player.idx+1]; return {gap:t.gap, attr:t.attr, need:neededButton(t)}; },
-  qaFever(){ if(state!=='play')reset(); started=true; startFever(); },
-  qaSetGauge(v){ gauge=clamp01(v); updateGauge(); },
+  stepCorrect(){ chooseLane(pickDefaultLane()); },
   setBg(n){ bgScroll=n; bgScrollDisp=n; }, get bgmPaused(){return BGM.paused},
   get zone(){return curAmbZone()}, get amb(){return amb}, get W(){return W}, get H(){return H},
   pumpAmb(z,n){ bgScroll=z; bgScrollDisp=z; for(let k=0;k<(n||40);k++) updateAmbient(0.05); return amb.map(p=>p.type); },
   qaState(s,t){ state=s; sleepT=t||0; wakeT=t||0; returnT=t||0; },
-  qaGenStats(n){ let one=0,two=0,blk=0,fev=0,nrm=0, blk1=0, g1=0;     // 새 컬럼 생성 분포 검증
-    let prev={gy:0};
-    for(let i=1;i<=n;i++){ const gap=(i<=2)?1:(Math.random()<0.5?1:2); const attr=genAttr(gap,i);
-      if(gap===1){one++; g1++; if(attr==='blocked')blk1++;} else two++;
-      if(attr==='blocked')blk++; else if(attr==='fever')fev++; else nrm++; prev={gy:prev.gy+gap}; }
-    return { n, p1:+(one/n).toFixed(2), p2:+(two/n).toFixed(2),
-             pFever:+(fev/n).toFixed(3), pBlocked:+(blk/n).toFixed(3), pBlockedGiven1:+(blk1/Math.max(1,g1)).toFixed(3) }; },
+  testRocket(){ if(state!=='play'){ reset(); } startRocket(); },
+  qaRocketFreeze(u){ reset(); for(let k=0;k<24 && state==='play';k++)chooseLane(pickDefaultLane()); state='play'; startRocket(); rocketT=u*ROCKET_DUR;
+    const e=easeIO(Math.min(1,rocketT/ROCKET_DUR)); rocketCamGy=rocketFromGy+(rocketToGy-rocketFromGy)*e; rocketCamGx=rocketFromGx+(rocketToGx-rocketFromGx)*e; bgScroll=bgScrollDisp=rocketFromBg+(rocketToBg-rocketFromBg)*e; },
+  qaCountdownShow(secs){ reset(); for(let k=0;k<24 && state==='play';k++)chooseLane(pickDefaultLane()); player.idx+=ROCKET_BOOST; bgScroll=bgScrollDisp=altAtStair(player.idx); state='countdown'; countT=secs; },
+  qaRocketResume(){ reset(); for(let k=0;k<24 && state==='play';k++)chooseLane(pickDefaultLane()); startRocket();
+    player.idx=rocketToIdx; stairs.length=player.idx+1; stairs[player.idx].turn=0; if(gen.grant)gen.grant(2); ensureStairs(player.idx+60);  // 착지(프레임 로직과 동일)
+    state='play'; started=true; gauge=GUAGE_MAX;
+    const landingTurn=stairs[player.idx].turn, n1=stairs[player.idx+1]&&stairs[player.idx+1].turn, n2=stairs[player.idx+2]&&stairs[player.idx+2].turn;
+    chooseLane(pickDefaultLane());  // 재개 후 한 칸
+    return JSON.stringify({landingTurn,n1,n2,survivedUpPress:state==='play'}); },
+  get rocketT(){return rocketT}, get countT(){return countT}, get combo(){return combo},
+  qaGenStats(n){ const g=makeStairGen({seed:12345}); let turns=0,run=0,maxRun=0,consec=0,maxConsec=0,runs=0,runSum=0;
+    for(let k=0;k<n;k++){ const b=g(); run++; if(b===1){ turns++; if(run===1){consec++; if(consec>maxConsec)maxConsec=consec;} else consec=0; runs++; runSum+=run; if(run>maxRun)maxRun=run; run=0; } }
+    return { n, pTurn:+(turns/n).toFixed(3), meanRun:+(runSum/Math.max(1,runs)).toFixed(2), maxConsecSingleTurn:maxConsec }; },
+  qaGenSeg(d,n){ const g=makeStairGen({seed:777}); for(let k=0;k<d;k++)g(); let s=''; for(let k=0;k<n;k++)s+=g(); return s; },
   forceBird:(low)=>spawnBird(low), forceSpawn:(t,o)=>spawnAmb(t,o) };
 </script>
 </body>
