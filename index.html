@@ -1491,7 +1491,17 @@ function drawPlat(sx,sy,o,opts){
     ctx.save(); ctx.globalAlpha=0.9; if(paw&&paw.width) ctx.drawImage(paw, sx-pw/2, sy-ch*0.34-pw, pw, pw); ctx.restore(); }
 }
 function render(){
-  if(state==='ready'||state==='sleep'||state==='wake'||state==='return'||state==='homewake'){ drawHomeScene(); return; }
+  if(state==='ready'||state==='sleep'||state==='homewake'){ drawHomeScene(); return; }
+  if(state==='wake'){    // 꿈 입장: 방이 구름으로 스르륵 디졸브되며 고양이가 떠오름
+    drawBackground(); const u=easeIO(Math.min(1,wakeT/1.0));
+    if(u>0.01){ ctx.save(); ctx.globalAlpha=u; drawSkyBg(); ctx.restore(); }
+    drawBookendCat(); return;
+  }
+  if(state==='return'){  // 꿈 퇴장: 구름이 걷히며 방으로 돌아와 잠
+    drawBackground(); const u=1-easeIO(Math.min(1,returnT/1.1));
+    if(u>0.01){ ctx.save(); ctx.globalAlpha=u; drawSkyBg(); ctx.restore(); }
+    drawBookendCat(); return;
+  }
   const p=stairs[player.idx]; const camGx=(state==='rocket')?rocketCamGx:p.gx;
   const camGy=(state==='rocket')?rocketCamGy:p.gy;   // 로켓 상승 중엔 카메라가 위로 패닝 → 발판이 아래로 흐름(끝에 목적지 발판이 중앙·ANCHOR로 도착)
   drawSkyBg();                                              // 꿈하늘 + 시차 구름
